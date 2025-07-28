@@ -1,0 +1,12 @@
+{
+  "name": "Voice-of-Justice",
+  "version": "1.0.0",
+  "devDependencies": {
+    "concurrently": "^9.2.0"
+  },
+  "scripts": {
+    "start": "concurrently \"npm run server\" \"npm run client\"",
+    "server": "node server/app.js",
+    "client": "npm start --prefix client"
+  }
+}
