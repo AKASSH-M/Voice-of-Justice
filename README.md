@@ -16,7 +16,7 @@ A voice-powered chatbot platform designed to assist users in understanding legal
 
 - **Frontend:** React.js  
 - **Backend:** Node.js + Express  
-- **API Integration:** Google - Gemma 3n 2B  
+- **API Integration:** Google - Gemma 3n 2B  ( api key : not included in public visibility )
 - **Styling:** CSS  
 
 ## 🚧 Current Features
