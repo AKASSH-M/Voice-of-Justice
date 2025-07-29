@@ -3,8 +3,6 @@ import Loader from './Loader';
 import SendButton from './SendButton';
 import './bot.css'; 
 
-
-
 const apiUrl = 'http://localhost:5000/api/chatbot/getResponse';
 
 function Bot() {
@@ -25,6 +23,10 @@ function Bot() {
     }
   }, [message]);
 
+  const scrollToBottom = () => {
+    chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
     const trimmedInput = userInput.trim();
@@ -37,44 +39,42 @@ function Bot() {
     setError('');
     setLoading(true);
     setMessage((prev) => [...prev, { bot: false, text: trimmedInput }]);
-    // Simulate bot response
-    fetch(apiUrl , {
-      method : 'POST',
+
+    fetch(apiUrl, {
+      method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({ userInput: trimmedInput }),
-    }).then((res) => {
-      if(!res.ok)
-        throw new Error('Network response was not ok');
-      return res.json();
-    }).then((data) => {
-      setResponse(data.reply);
-      setMessage((prev) => [...prev, { bot: true, text: data.reply }]);
-    }).then(() => {
-      setLoading(false);
-      scrollToBottom();
-    }).catch((err) => {
-      setError('Failed to fetch response. Please try again later.');
-      console.error('Error fetching response:', err);
-    }).finally(() => {
-      setLoading(false);
-      scrollToBottom();
     })
+      .then((res) => {
+        if (!res.ok) throw new Error('Network response was not ok');
+        return res.json();
+      })
+      .then((data) => {
+        setResponse(data.reply);
+        setMessage((prev) => [...prev, { bot: true, text: data.reply }]);
+      })
+      .then(scrollToBottom)
+      .catch((err) => {
+        setError('Failed to fetch response. Please try again later.');
+        console.error('Error fetching response:', err);
+      })
+      .finally(() => {
+        scrollToBottom();
+        setLoading(false);
+      });
 
     setUserInput('');
-    if (inputRef.current) inputRef.current.value = '';
   };
 
   const handleInputChange = (e) => {
     setUserInput(e.target.value);
-    setError(''); // Clear error when user types
+    setError('');
   };
 
-  const scrollToBottom = () => {}
   return (
     <>
-      
       <div className="chat-window">
         {message.map((item, index) => (
           <div key={index} className={item.bot ? 'bot' : 'user'}>
@@ -83,7 +83,7 @@ function Bot() {
         ))}
         <div ref={chatEndRef} />
       </div>
-      
+
       <div className="input-area">
         <form onSubmit={handleSubmit}>
           <textarea
@@ -107,7 +107,6 @@ function Bot() {
         </form>
         {error && <p className="error">{error}</p>}
       </div>
-      
     </>
   );
 }
